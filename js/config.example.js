@@ -27,7 +27,7 @@ var AppConfig = Object.freeze({
     /* If hosting on Netlify, you MUST use a tunneling service (like Ngrok, Pinggy, LocalTunnel)
        to expose your local LM Studio. Paste the HTTPS URL here. 
        Leave empty ("") for local offline use. */
-    PUBLIC_API_URL: "",
+    PUBLIC_API_URL: "https://portrait-prominent-player-test.trycloudflare.com",
 
     /* API Endpoints */
     CHAT_ENDPOINTS: Object.freeze(["/v1/chat/completions", "/api/v0/chat/completions"]),
@@ -37,7 +37,7 @@ var AppConfig = Object.freeze({
     MODEL_UNLOAD_ENDPOINT: "/api/v1/models/unload",
 
     /* Auth & Network */
-    REQUIRE_API_KEY: true,
+    REQUIRE_API_KEY: false,
     ALLOWED_LOCALHOSTS: Object.freeze(["localhost", "127.0.0.1", "::1"]),
     ALLOW_PRIVATE_NETWORK: true,
 
