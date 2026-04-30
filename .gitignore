@@ -7,8 +7,6 @@ api.txt
 
 # Tunnel binary
 cloudflared.exe
-*.secret
-*.env
 
 # Server temp files
 .server_port

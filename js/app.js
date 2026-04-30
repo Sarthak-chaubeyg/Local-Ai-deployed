@@ -428,6 +428,15 @@ function setupEventDelegation() {
                 var memIdx = parseInt(target.getAttribute('data-memory-index'), 10);
                 if (!isNaN(memIdx)) deleteMemory(memIdx);
                 break;
+            case 'open-settings':
+                openSettings();
+                break;
+            case 'close-settings':
+                closeSettings();
+                break;
+            case 'save-settings':
+                saveSettings();
+                break;
         }
     });
 
@@ -466,6 +475,14 @@ function setupEventDelegation() {
     if (memOverlay) {
         memOverlay.addEventListener('click', function (e) {
             if (e.target === memOverlay) closeMemoryManager();
+        });
+    }
+
+    // Overlay click handler for settings
+    var settingsOverlay = document.getElementById('settingsOverlay');
+    if (settingsOverlay) {
+        settingsOverlay.addEventListener('click', function (e) {
+            if (e.target === settingsOverlay) closeSettings();
         });
     }
 }

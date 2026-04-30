@@ -2197,3 +2197,70 @@ mjx-container[display="true"] {
     70% { transform: scale(1); box-shadow: 0 0 0 4px rgba(34, 197, 94, 0); }
     100% { transform: scale(0.95); box-shadow: 0 0 0 0 rgba(34, 197, 94, 0); }
 }
+
+/* ═══════════════════════════════════════════════════════
+ *  SERVER URL SETTINGS
+ * ═══════════════════════════════════════════════════════ */
+.settings-btn {
+    background: linear-gradient(135deg, #ecfdf5, #d1fae5) !important;
+    color: #059669 !important;
+    border-color: rgba(5, 150, 105, 0.15) !important;
+}
+
+.settings-btn:hover {
+    background: linear-gradient(135deg, #d1fae5, #a7f3d0) !important;
+    box-shadow: 0 4px 14px rgba(5, 150, 105, 0.12) !important;
+}
+
+.settings-icon {
+    background: linear-gradient(135deg, #059669, #10b981) !important;
+}
+
+.settings-label {
+    font-size: 13px;
+    font-weight: 700;
+    color: var(--text);
+    display: block;
+    margin-bottom: 4px;
+}
+
+.settings-hint {
+    font-size: 11px;
+    color: var(--muted);
+    margin: 0 0 10px;
+    line-height: 1.5;
+}
+
+.settings-hint code {
+    background: #f1f5f9;
+    padding: 2px 6px;
+    border-radius: 4px;
+    font-size: 10px;
+    font-family: 'Courier New', monospace;
+}
+
+.settings-save-btn {
+    background: linear-gradient(135deg, #059669, #10b981) !important;
+    box-shadow: 0 4px 14px rgba(5, 150, 105, 0.2) !important;
+}
+
+.settings-save-btn:hover {
+    box-shadow: 0 6px 20px rgba(5, 150, 105, 0.3) !important;
+}
+
+.settings-current {
+    margin-top: 14px;
+    padding: 10px 14px;
+    border-radius: 10px;
+    background: #f8fafc;
+    border: 1px solid var(--border);
+    font-size: 11px;
+    color: var(--muted);
+    word-break: break-all;
+    line-height: 1.5;
+}
+
+.settings-current strong {
+    color: var(--text);
+    font-weight: 700;
+}

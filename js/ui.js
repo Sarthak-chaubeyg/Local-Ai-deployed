@@ -685,3 +685,67 @@ function deleteMemory(index) {
 function showMemoryToast(msg) {
     setStatus(msg);
 }
+
+/* ───────────────────────────────────────────────
+ *  SERVER URL SETTINGS UI
+ * ─────────────────────────────────────────────── */
+function openSettings() {
+    var overlay = document.getElementById('settingsOverlay');
+    if (!overlay) return;
+    var input = document.getElementById('serverUrlInput');
+    var currentDisplay = document.getElementById('settingsCurrentUrl');
+    
+    // Pre-fill with current base URL
+    if (input) {
+        input.value = AppState.currentBaseUrl || '';
+    }
+    // Show current status
+    if (currentDisplay) {
+        var savedUrl = Security.SafeStorage.get('lmstudio_base_url', '');
+        currentDisplay.innerHTML = '<strong>Currently saved:</strong> ' +
+            Security.escapeHtml(savedUrl || '(auto-detected)') +
+            '<br><strong>Active:</strong> ' +
+            Security.escapeHtml(AppState.currentBaseUrl || 'none');
+    }
+    overlay.classList.add('visible');
+}
+
+function closeSettings() {
+    var overlay = document.getElementById('settingsOverlay');
+    if (!overlay) return;
+    overlay.classList.remove('visible');
+}
+
+function saveSettings() {
+    var input = document.getElementById('serverUrlInput');
+    if (!input) return;
+    var url = input.value.trim().replace(/\/+$/, '');
+    
+    if (!url) {
+        // Clear saved URL — go back to auto-detection
+        Security.SafeStorage.remove('lmstudio_base_url');
+        AppState.currentBaseUrl = '';
+        closeSettings();
+        showToast('Cleared server URL — will auto-detect');
+        discoverModels();
+        return;
+    }
+    
+    // Basic URL validation
+    try {
+        new URL(url);
+    } catch (_e) {
+        showToast('Invalid URL — must start with http:// or https://', true);
+        return;
+    }
+    
+    // Save and apply
+    AppState.currentBaseUrl = url;
+    saveBaseUrl();
+    closeSettings();
+    showToast('Server URL saved! Connecting...');
+    setStatus('Connecting to ' + url + '...');
+    
+    // Trigger discovery with the new URL
+    discoverModels();
+}

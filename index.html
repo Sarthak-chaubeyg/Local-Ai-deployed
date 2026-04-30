@@ -77,6 +77,9 @@
                     <button class="manage-models-btn memory-btn" data-action="open-memory-manager" id="memoryBtn">
                         <i class="ri-brain-line"></i> Memory
                     </button>
+                    <button class="manage-models-btn settings-btn" data-action="open-settings" id="settingsBtn">
+                        <i class="ri-link"></i> Server URL
+                    </button>
                 </div>
             </div>
 
@@ -195,6 +198,33 @@
                     <div>No memories yet</div>
                     <div class="mm-empty-hint">Add facts you want the AI to remember across all chats.</div>
                 </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Server URL Settings Modal -->
+    <div class="model-manager-overlay" id="settingsOverlay">
+        <div class="model-manager-modal settings-modal">
+            <div class="mm-header">
+                <div class="mm-header-left">
+                    <div class="mm-header-icon settings-icon"><i class="ri-link"></i></div>
+                    <div>
+                        <h3>Server URL</h3>
+                        <p>Paste your Cloudflare tunnel URL here</p>
+                    </div>
+                </div>
+                <button class="mm-close-btn" data-action="close-settings" title="Close"><i class="ri-close-line"></i></button>
+            </div>
+            <div class="mm-body" style="padding:20px 22px 24px;">
+                <div class="settings-field">
+                    <label class="settings-label" for="serverUrlInput">LM Studio Server URL</label>
+                    <p class="settings-hint">This is the public HTTPS URL from your Cloudflare tunnel.<br>Example: <code>https://warm-snails-sit.trycloudflare.com</code></p>
+                    <input type="url" id="serverUrlInput" class="memory-input" placeholder="https://your-tunnel.trycloudflare.com" />
+                </div>
+                <button class="memory-add-btn settings-save-btn" data-action="save-settings" style="width:100%;margin-top:14px;height:44px;">
+                    <i class="ri-save-line"></i> Save &amp; Connect
+                </button>
+                <div class="settings-current" id="settingsCurrentUrl"></div>
             </div>
         </div>
     </div>
