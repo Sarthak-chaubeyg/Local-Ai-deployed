@@ -5,8 +5,9 @@ api.txt
 *.secret
 *.env
 
-# Tunnel binary
+# Tunnel binary & logs
 cloudflared.exe
+tunnel_log.txt
 
 # Server temp files
 .server_port
