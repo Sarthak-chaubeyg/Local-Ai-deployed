@@ -601,13 +601,16 @@ function selectModelFromUI() {
 function toggleSidebar() {
     var sidebar = document.getElementById('sidebar');
     var overlay = document.getElementById('sidebarOverlay');
+    if (!sidebar) return;
     sidebar.classList.toggle('open');
-    if (sidebar.classList.contains('open')) {
-        overlay.style.display = 'block';
-        setTimeout(function () { overlay.style.opacity = '1'; }, 10);
-    } else {
-        overlay.style.opacity = '0';
-        setTimeout(function () { overlay.style.display = 'none'; }, 300);
+    if (overlay) {
+        if (sidebar.classList.contains('open')) {
+            overlay.style.display = 'block';
+            setTimeout(function () { overlay.style.opacity = '1'; }, 10);
+        } else {
+            overlay.style.opacity = '0';
+            setTimeout(function () { overlay.style.display = 'none'; }, 300);
+        }
     }
 }
 

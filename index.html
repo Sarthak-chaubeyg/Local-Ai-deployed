@@ -7,7 +7,6 @@
 
     <!-- 🔒 Security Headers -->
     <meta http-equiv="X-Content-Type-Options" content="nosniff" />
-    <meta http-equiv="X-Frame-Options" content="DENY" />
     <meta name="referrer" content="no-referrer" />
 
     <title>Intelligent Chat</title>
@@ -87,6 +86,9 @@
                 <div class="section-label">Conversations</div>
             </div>
         </aside>
+
+        <!-- Mobile sidebar overlay (tap to close) -->
+        <div class="sidebar-overlay" id="sidebarOverlay" data-action="toggle-sidebar-overlay"></div>
 
         <!-- Desktop sidebar toggle arrow -->
         <button class="sidebar-toggle-desktop" id="desktopToggle" data-action="toggle-desktop-sidebar"
@@ -244,20 +246,19 @@
         8. models.js     → Model manager
         9. app.js        → Init, wire-up, entry point
     -->
-    <!-- Config: loads real config.js (gitignored), falls back to safe template -->
-    <script src="js/config.js?v=4" onerror="
-        var s=document.createElement('script');
-        s.src='js/config.example.js?v=4';
-        document.head.appendChild(s);
-    "></script>
-    <script src="js/security.js?v=3"></script>
-    <script src="js/state.js?v=3"></script>
-    <script src="js/formatting.js?v=3"></script>
-    <script src="js/network.js?v=3"></script>
-    <script src="js/ui.js?v=3"></script>
-    <script src="js/upload.js?v=3"></script>
-    <script src="js/models.js?v=3"></script>
-    <script src="js/app.js?v=3"></script>
+    <!-- Config: config.example.js loads first (always exists on Netlify + local).
+         config.js loads second (gitignored, only exists locally) and overrides with real keys.
+         On Netlify, config.js 404s silently and defaults are used. -->
+    <script src="js/config.example.js?v=5"></script>
+    <script src="js/config.js?v=5" onerror="console.log('[Config] Using defaults — config.js not found')"></script>
+    <script src="js/security.js?v=5"></script>
+    <script src="js/state.js?v=5"></script>
+    <script src="js/formatting.js?v=5"></script>
+    <script src="js/network.js?v=5"></script>
+    <script src="js/ui.js?v=5"></script>
+    <script src="js/upload.js?v=5"></script>
+    <script src="js/models.js?v=5"></script>
+    <script src="js/app.js?v=5"></script>
 </body>
 
 </html>
