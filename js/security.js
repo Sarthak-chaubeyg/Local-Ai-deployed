@@ -166,6 +166,11 @@ var Security = (function () {
             if (url.protocol !== 'http:' && url.protocol !== 'https:') return false;
             if (AppConfig.ALLOWED_LOCALHOSTS.indexOf(url.hostname) !== -1) return true;
             if (AppConfig.ALLOW_PRIVATE_NETWORK && isPrivateIpHost(url.hostname)) return true;
+            // Allow the explicitly configured PUBLIC_API_URL (tunnel)
+            var publicUrl = normalizeBaseUrl(AppConfig.PUBLIC_API_URL || '');
+            if (publicUrl && normalizeBaseUrl(baseUrl) === publicUrl) return true;
+            // Allow any HTTPS URL (tunnels like loca.lt, ngrok.io always use HTTPS)
+            if (url.protocol === 'https:') return true;
             return false;
         } catch (_e) {
             return false;
