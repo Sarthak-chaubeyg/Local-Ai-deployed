@@ -1,0 +1,228 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+    <!-- 🔒 Security Headers -->
+    <meta http-equiv="X-Content-Type-Options" content="nosniff" />
+    <meta http-equiv="X-Frame-Options" content="DENY" />
+    <meta name="referrer" content="no-referrer" />
+
+    <title>Intelligent Chat</title>
+    <meta name="description" content="Local LLM chat interface for LM Studio" />
+
+    <!-- External Resources -->
+    <link href="https://cdn.jsdelivr.net/npm/remixicon@4.6.0/fonts/remixicon.css" rel="stylesheet"
+        referrerpolicy="no-referrer" crossorigin="anonymous">
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;600;700;800&display=swap" rel="stylesheet"
+        referrerpolicy="no-referrer" crossorigin="anonymous">
+
+    <!-- PDF.js for document parsing (Local & Offline) -->
+    <script src="js/lib/pdf.min.js"></script>
+
+    <!-- MathJax for rendering math blocks offline -->
+    <script>
+        window.MathJax = {
+            tex: { inlineMath: [['$', '$'], ['\\(', '\\)']], displayMath: [['$$', '$$'], ['\\[', '\\]']] },
+            chtml: { fontURL: 'js/lib/mathjax/output/chtml/fonts/woff-v2' },
+            startup: { typeset: false } // We typeset manually
+        };
+    </script>
+    <script id="MathJax-script" src="js/lib/mathjax/tex-chtml-full.js" defer></script>
+
+    <!-- Application Styles -->
+    <link rel="stylesheet" href="css/styles.css?v=3" />
+</head>
+
+<body>
+    <!-- Sidebar Overlay (mobile) -->
+    <div class="sidebar-overlay" id="sidebarOverlay"></div>
+
+    <div class="app">
+        <aside class="sidebar" id="sidebar">
+            <div class="sidebar-top">
+                <div class="brand">
+                    <div class="brand-mark"><i class="ri-sparkling-2-line"></i></div>
+                    <div class="brand-text">
+                        <h1>Intelligent Chat</h1>
+                        <p>Light theme · smart titles · polished UI</p>
+                    </div>
+                </div>
+
+                <button class="main-btn" data-action="new-chat"><i class="ri-chat-new-line"></i> Start New
+                    Conversation</button>
+
+                <div class="model-picker">
+                    <div class="model-label-row">
+                        <div class="model-label">Running models</div>
+                        <button class="discover-btn" id="discoverBtn" data-action="discover-models"><i
+                                class="ri-refresh-line"></i> Refresh</button>
+                    </div>
+                    <div class="model-row">
+                        <select class="model-select" id="modelSelect" aria-label="Model selector"></select>
+                        <button class="refresh-btn" title="Refresh models" data-action="discover-models"><i
+                                class="ri-loop-left-line"></i></button>
+                    </div>
+                    <div class="model-count" id="modelCount">Loading models...</div>
+                    <div class="endpoint-chip"><span>API</span><code id="apiBaseText">Detecting…</code></div>
+                    <div class="server-status" id="serverStatus" title="Checking server status...">
+                        <div class="status-dot" id="serverStatusDot"></div>
+                        <span id="serverStatusText">Detecting...</span>
+                    </div>
+                    <button class="manage-models-btn" data-action="open-model-manager" id="manageModelsBtn">
+                        <i class="ri-settings-3-line"></i> Manage Models
+                    </button>
+                    <button class="manage-models-btn memory-btn" data-action="open-memory-manager" id="memoryBtn">
+                        <i class="ri-brain-line"></i> Memory
+                    </button>
+                </div>
+            </div>
+
+            <div class="chat-list" id="chatList">
+                <div class="section-label">Conversations</div>
+            </div>
+        </aside>
+
+        <!-- Desktop sidebar toggle arrow -->
+        <button class="sidebar-toggle-desktop" id="desktopToggle" data-action="toggle-desktop-sidebar"
+            title="Toggle sidebar">
+            <i class="ri-arrow-left-s-line"></i>
+        </button>
+
+        <main class="chat-container">
+
+            <div class="header">
+                <div class="header-left">
+                    <button class="menu-btn" data-action="toggle-sidebar"><i class="ri-menu-line"></i></button>
+                    <div class="chat-name-wrap">
+                        <h2 class="chat-name" id="chatName">No chat selected</h2>
+                        <p class="chat-subtitle" id="chatSubtitle">Start a conversation to generate a smart title.</p>
+                    </div>
+                </div>
+                <div class="header-right">
+                    <div class="selected-model-chip" id="selectedModelChip">No model selected</div>
+                    <div class="header-pill" id="headerPill">⚡ Ready for your next message</div>
+                </div>
+            </div>
+
+            <div class="messages" id="messages">
+                <div class="empty-state" id="emptyState">
+                    <h2>Welcome</h2>
+                    <p>Start a chat, ask a question, or continue an existing conversation from the sidebar.</p>
+                </div>
+            </div>
+
+            <div class="composer">
+                <!-- File preview chips (shown when files are attached) -->
+                <div class="file-preview" id="filePreview"></div>
+
+                <div class="composer-row">
+                    <div class="input-shell">
+                        <!-- 📎 Paperclip upload button -->
+                        <button class="attach-btn" data-action="attach-file"
+                            title="Upload document (PDF, text, code files — 30MB limit)">
+                            <i class="ri-attachment-2"></i>
+                        </button>
+                        <textarea id="input" placeholder="Type your message..." rows="1"></textarea>
+                        <!-- Hidden file input -->
+                        <input type="file" id="fileInput" multiple
+                            accept=".txt,.md,.csv,.json,.xml,.html,.htm,.css,.js,.ts,.jsx,.tsx,.py,.java,.c,.cpp,.h,.go,.rs,.php,.rb,.sh,.yaml,.yml,.toml,.sql,.pdf,.log,.ini,.cfg,.env,.dart,.vue,.svelte,.tex,.rst,.lua,.r,.kt,.swift,.bat,.ps1,.dockerfile"
+                            style="display:none" />
+                    </div>
+                    <div class="composer-actions">
+                        <button class="tool-btn think-toggle" id="thinkBtn" title="Thinking mode"
+                            data-action="thinking-mode"><i
+                                class="ri-lightbulb-flash-line"></i><span>Think</span></button>
+                        <button class="tool-btn search-toggle" id="searchBtn" title="Web Search"
+                            data-action="search-mode"><i
+                                class="ri-global-line"></i><span>Search</span></button>
+                        <button class="send" id="sendBtn" data-action="send-message"><i
+                                class="ri-send-plane-2-line"></i>
+                            Send</button>
+                    </div>
+                </div>
+                <div class="status" id="status">Ready</div>
+            </div>
+        </main>
+    </div>
+
+    <!-- Model Manager Modal Overlay -->
+    <div class="model-manager-overlay" id="modelManagerOverlay">
+        <div class="model-manager-modal" id="modelManagerModal">
+            <div class="mm-header">
+                <div class="mm-header-left">
+                    <div class="mm-header-icon"><i class="ri-settings-3-line"></i></div>
+                    <div>
+                        <h3>Model Manager</h3>
+                        <p>Load or unload downloaded models</p>
+                    </div>
+                </div>
+                <button class="mm-close-btn" data-action="close-model-manager" title="Close"><i
+                        class="ri-close-line"></i></button>
+            </div>
+            <div class="mm-body" id="mmBody">
+                <div class="mm-loading">
+                    <i class="ri-loader-4-line"></i>
+                    Loading model list...
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Memory Manager Modal Overlay -->
+    <div class="model-manager-overlay" id="memoryManagerOverlay">
+        <div class="model-manager-modal memory-modal">
+            <div class="mm-header">
+                <div class="mm-header-left">
+                    <div class="mm-header-icon memory-icon"><i class="ri-brain-line"></i></div>
+                    <div>
+                        <h3>Memory</h3>
+                        <p>Facts the AI remembers across all chats</p>
+                    </div>
+                </div>
+                <button class="mm-close-btn" data-action="close-memory-manager" title="Close"><i
+                        class="ri-close-line"></i></button>
+            </div>
+            <div class="memory-add-row">
+                <input type="text" id="memoryInput" class="memory-input" placeholder="e.g. My name is Sarthak Chaubey" maxlength="500" />
+                <button class="memory-add-btn" data-action="add-memory"><i class="ri-add-line"></i> Add</button>
+            </div>
+            <div class="mm-body" id="memoryBody">
+                <div class="mm-empty">
+                    <i class="ri-brain-line"></i>
+                    <div>No memories yet</div>
+                    <div class="mm-empty-hint">Add facts you want the AI to remember across all chats.</div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Toast notification -->
+    <div class="mm-toast" id="mmToast"></div>
+
+    <!--
+        🔒 Load order matters:
+        1. config.js     → Configuration (API key here)
+        2. security.js   → CSP, escaping, rate limiting
+        3. state.js      → Application state
+        4. formatting.js → Text/code formatting
+        5. network.js    → API calls, streaming
+        6. ui.js         → DOM rendering, sidebar
+        7. upload.js     → File upload handling
+        8. models.js     → Model manager
+        9. app.js        → Init, wire-up, entry point
+    -->
+    <script src="js/config.js?v=3"></script>
+    <script src="js/security.js?v=3"></script>
+    <script src="js/state.js?v=3"></script>
+    <script src="js/formatting.js?v=3"></script>
+    <script src="js/network.js?v=3"></script>
+    <script src="js/ui.js?v=3"></script>
+    <script src="js/upload.js?v=3"></script>
+    <script src="js/models.js?v=3"></script>
+    <script src="js/app.js?v=3"></script>
+</body>
+
+</html>

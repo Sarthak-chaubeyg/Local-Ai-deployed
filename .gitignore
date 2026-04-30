@@ -1,0 +1,14 @@
+# Security — never commit credentials
+js/config.js
+api.txt
+*.key
+*.secret
+*.env
+
+# Server temp files
+.server_port
+
+# OS files
+.DS_Store
+Thumbs.db
+desktop.ini
