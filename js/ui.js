@@ -138,8 +138,11 @@ function toggleThinkingMode() {
 
 function toggleSearchMode() {
     var key = String(AppConfig.TAVILY_API_KEY || '').trim();
+    var isNetlify = window.location.hostname.indexOf('netlify.app') !== -1;
 
-    if (!key) {
+    // Block only if there is no local key AND we're not on Netlify
+    // (On Netlify, the serverless proxy provides the key securely)
+    if (!key && !isNetlify) {
         showToast('Tavily API Key missing in js/config.js. Please add it there to enable Web Search.', true);
         return;
     }

@@ -290,7 +290,9 @@ function sendMessage() {
         });
     }
 
-    if (AppState.searchEnabled && AppConfig.TAVILY_API_KEY) {
+    var hasSearchKey = Boolean(AppConfig.TAVILY_API_KEY && String(AppConfig.TAVILY_API_KEY).trim());
+    var isNetlify = window.location.hostname.indexOf('netlify.app') !== -1;
+    if (AppState.searchEnabled && (hasSearchKey || isNetlify)) {
         setStatus('Refining search query...');
         var hp = document.getElementById('headerPill');
         if (hp) hp.innerHTML = '<span class="typing"><span></span><span></span><span></span></span> Refining search';

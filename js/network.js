@@ -613,10 +613,33 @@ function _executeLocalRAG(results, query) {
 }
 
 function executeTavilySearch(query) {
-    if (!AppConfig.TAVILY_API_KEY) {
-        return Promise.reject(new Error("TAVILY_API_KEY is missing in config.js"));
+    var hasLocalKey = Boolean(AppConfig.TAVILY_API_KEY && String(AppConfig.TAVILY_API_KEY).trim());
+
+    // Route 1: No local key — use the Netlify serverless proxy
+    // The proxy injects the API key server-side from Netlify env vars.
+    if (!hasLocalKey) {
+        console.log('[Search] No local Tavily key — using Netlify proxy');
+        return fetch('/.netlify/functions/tavily-search', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+                query: query,
+                search_depth: AppConfig.TAVILY_SEARCH_DEPTH || 'basic',
+                include_raw_content: true,
+                max_results: AppConfig.TAVILY_MAX_RESULTS || 10
+            })
+        })
+        .then(function(res) {
+            if (!res.ok) return res.text().then(function(t) { throw new Error(t); });
+            return res.json();
+        })
+        .then(function(data) {
+            if (!data || !data.results) return [];
+            return _executeLocalRAG(data.results, query);
+        });
     }
-    
+
+    // Route 2: Local key present — call Tavily directly (fast, no proxy)
     var payload = {
         api_key: AppConfig.TAVILY_API_KEY,
         query: query,
